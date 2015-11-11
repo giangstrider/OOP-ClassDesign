@@ -193,3 +193,75 @@ end
 
 Check type first, bussiness logic later.
 
+
+
+### 5. Senior
+`Who are you?`.
+We have 2 objects: `you` and `me`, all these is child of `Person` object. I asked you about your age.
+You can answer like this:
+
+```ruby
+def age
+  if trying_impress?
+    return @age + 5
+  elsif trying_to_be_teengaer
+    return @age - 3
+  else
+    return @age
+  end
+end
+```
+
+You hidden your age, you only send message to me. So, I also have message, but not like you:
+
+```ruby
+def age
+# i am honest
+  return @age
+end
+```
+
+1 message give the age, but method of `you` and `me` are different.
+Idea is always give simple information is `age`, no give and extras.
+Let's make another example, you should be clear:
+
+```ruby
+mine_cell = Cell.new_mine
+flag_cell = Cell.new_flag
+mine_cell.contents = :flag
+
+def choose(cell)
+  if cell.contents == :mine
+    game_over
+  else next_turn
+  end
+end
+```
+
+`cell.contents` get `contents` from `cell`. So what message they want to send there? They want check that cell is really a mine. Rule is `don't give any extras`.
+
+Rewrite it:
+
+```ruby
+def mine?
+  @contents == :mine
+end
+
+def flag!
+  @contents == :flags
+end
+
+def choose(cell)
+  if cell.mine?
+    game_over
+  else
+    next_turn
+  end
+end
+```
+
+Always send message for the other, give exactly they need, `don't give any extras`.
+
+
+
+
