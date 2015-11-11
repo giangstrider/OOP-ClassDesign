@@ -45,4 +45,37 @@ But in this case, you shouldn't refactor because logic range too difficult.
  Because you need exactly value of time, so start_date is computed attribute. You need to use `start_date` because it will give you exactly time in the time you used it, and `@start_date` don't give you that chance.
 
 
+### 2. Child
+`I promised `.
+It's talk about Function( or method). `When I was a child, I promised to do something`.
+In design function, you must make sure input types is same. And ouput must be *consitent*, never give `nil` output.
 
+```ruby
+class SodaMachine
+  def dispense(code, change_inserted)
+    soda_type = soda_type_for(code) return nil if soda_type == nil num_sodas = (change_inserted/ soda_type.cost).floor
+    case num_sodas
+      when 0
+        return false
+      when 1
+        return new_soda(soda_type)
+      else
+        return Array.new(num_sodas) { new_soda(soda_type) }
+    end
+  end
+end
+```
+
+
+Let's see `dispense` function. It's return 3 types of value output: `nil`, `boolean` and `object`. So ... Fail design. Let' rewrite:
+
+```ruby
+def dispense(code, change_inserted)
+  soda_type = soda_type_for(code)
+  return [] if soda_type == nil
+  num_sodas = (change_inserted/ soda_type.cost ).floor
+  return Array.new(num_sodas) { new_soda(soda_type) }
+end
+```
+
+Now, return type is Array. If you value is `nil`, you should return an `empty` Array, so if it's nil, return the empty of that type.
