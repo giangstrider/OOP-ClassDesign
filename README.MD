@@ -79,3 +79,54 @@ end
 ```
 
 Now, return type is Array. If you value is `nil`, you should return an `empty` Array, so if it's nil, return the empty of that type.
+
+
+
+### 3. Teenager
+
+```ruby
+def DateRange
+  attr_reader :start_date, :end_date, :duration
+
+  def initializer(start_date, end_date = nil, duration = nil)
+    @start_date = start_date
+    if end_date == nil && duration == nil
+      puts " error "
+    elsif end_date == nil
+      @duration = duration
+      @end_date = start_date + duration
+    else
+      @end_date = end_date
+      @duration = end_date + start_date
+    end
+  end
+end
+```
+
+
+Let's see `DateRange` method. It have 3 attributes, and 1 of these can compute from 2 others. In this case, `duration` can equals `end_date - start_date`.
+The rule is `You don't want grow up`. Make sure that don't grow up your object, just enough the attributes, don't give any extras. Rewrite it:
+
+```ruby
+def DateRange
+  attr_reader :start_date, :end_date, :duration
+
+  def initializer (start_date= nil, duration= nil)
+    @start_date = start_date
+    @duration = duration
+  end
+
+  def self.new_with_end_date(start_date, end_date)
+    duration = end_date - start_date
+    new(start_date: start_date, duration: duration)
+  end
+
+  def end_date
+    start_date + duration
+  end
+end
+```
+
+`initilize` method accept 2 attributes. `new_with_end_date` method process atribute then callback to `initialize`. `end_date` is computed attribute, you make it become a function.
+
+*Summary*: Find which attribute can computed, make it become a function. It be clearly that is a computed attribute from already atrribute. It's very flexible in test case.
