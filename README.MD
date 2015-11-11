@@ -130,3 +130,66 @@ end
 `initilize` method accept 2 attributes. `new_with_end_date` method process atribute then callback to `initialize`. `end_date` is computed attribute, you make it become a function.
 
 *Summary*: Find which attribute can computed, make it become a function. It be clearly that is a computed attribute from already atrribute. It's very flexible in test case.
+
+
+
+### 4. Adult
+`Always say NO`. Say NO with bad dependencies. Look back to `disense` method in *Child* rule.
+
+```ruby
+def dispense(code, change_inserted)
+  soda_type = soda_type_for(code)
+  return [] if soda_type == nil
+  num_sodas = (change_inserted/ soda_type.cost ).floor
+  return Array.new(num_sodas) { new_soda(soda_type) }
+end
+```
+
+Think about which value can be bad, wrong input or ... something.
+- First, `change_inserted` must be >= 0 ? Because no one put -1 coin to machine.
+- Second, `soda_type.cost` might be equals 0.
+So write statement to make sure it's not wrong.
+
+```ruby
+def dispense(code, change_inserted)
+  fail ArgumentError, "Must input positive money!" unless change_inserted >= 0
+
+  soda_type = soda_type_for(code)
+  return [] if soda_type == nil
+  soda_cost = soda_type.cost
+
+  fail RangeError, "Sodas cannot cost less then a penny"
+
+  unless soda_cost > 0
+    num_sodas = (change_inserted / soda_type.cost ).floor
+    return Array.new(num_sodas) { new_soda(soda_type) }
+  end
+end
+```
+
+Somebody may be told you that : `soda_type.cost` must make sure > 0 in `soda_type` object, so we don't need to check. What do you think?
+Yes, that right. `dispense` method control before `soda_type`, but you must make sure `soda_type.cost` > 0 when you create this object.
+So idea is `Say NO from beginning`.
+
+```ruby
+class SodaType
+  attr_reader :cost
+
+  def initializer(cost)
+    @cost = cost
+  end
+
+  def cost=(other_cost)
+    fail ArgumentErorr, "Must be a number"
+    unless other_cost.is_a? Fixnum
+      fail ArgumentError, "Sodas cannot cost less than a penny"
+      unless other_cost > 0
+        @cost = other_cost
+      end
+    end
+  end
+end
+```
+
+Check type first, bussiness logic later.
+
